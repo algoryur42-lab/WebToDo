@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Мои задачи</h1>
+    <form action="{{ url_for('add_task') }}" method="POST">
+        <input type="text" name="title" placeholder="Введите новую задачу..." required>
+        <button type="submit">Добавить</button>
+    </form>
+    <form id="global-action-form" method="POST"></form>
+    {% for task in tasks %}
+        <li>
+            <button name="id_done" form="global-action-form" formaction="{{url_for('change_done')}}" value="{{task.id}}">✔</button>
+            <span style="text-decoration: {{ 'line-through' if task.done else 'none' }}">
+                {{ loop.index }}. {{ task.title }}
+            </span>
+            <button name="id_delete" form="global-action-form" formaction="{{url_for('delete_task')}}" value="{{task.id}}">❌</button>
+        </li>  
+    {% endfor %}  
+{% endblock %}
