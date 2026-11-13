@@ -1,6 +1,6 @@
 import sqlite3
 from contextlib import closing
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, abort
 
 def init_db():
     with closing(sqlite3.connect("tasks.db")) as conn, conn:
@@ -36,6 +36,8 @@ def change_done():
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute('UPDATE tasks SET done = NOT done WHERE id = ?', (task_id,))
+        if not cursor.rowcount:
+            abort(404)
     return redirect(url_for('index'))
 
 @app.route('/add', methods=["POST"])
@@ -55,6 +57,8 @@ def delete_task():
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute('DELETE FROM tasks WHERE id = ?', (task_id,))
+        if not cursor.rowcount:
+            abort(404)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
