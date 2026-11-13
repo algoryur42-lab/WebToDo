@@ -18,12 +18,16 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    show_open = request.args.get('show') == 'open'
     with closing(sqlite3.connect("tasks.db")) as conn, conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM tasks ORDER BY id')
+        if show_open:
+            cursor.execute('SELECT * FROM tasks WHERE done = 0 ORDER BY id')
+        else:
+            cursor.execute('SELECT * FROM tasks ORDER BY id')
         tasks = cursor.fetchall()
-    return render_template('index.html', tasks=tasks)
+    return render_template('index.html', tasks=tasks, show_open=show_open)
 
 @app.route('/done', methods=["POST"])
 def change_done():
