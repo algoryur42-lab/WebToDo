@@ -1,6 +1,7 @@
 import sqlite3
 from contextlib import closing
 from flask import Flask, render_template, redirect, url_for, request, abort
+from flask_wtf.csrf import CSRFProtect
 
 def init_db():
     with closing(sqlite3.connect("tasks.db")) as conn, conn:
@@ -15,6 +16,10 @@ def init_db():
             ''')
 
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = 'секретный-ключ-для-защиты'
+
+csrf = CSRFProtect(app)
 
 @app.route('/')
 def index():
